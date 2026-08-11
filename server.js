@@ -18,7 +18,6 @@ const db = new sqlite3.Database('./usuarios.db');
   db.run(`CREATE TABLE IF NOT EXISTS admin_config (id INTEGER PRIMARY KEY AUTOINCREMENT, clave_admin TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS ingredientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT UNIQUE, stock REAL DEFAULT 0, unidad TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS recetas (id INTEGER PRIMARY KEY AUTOINCREMENT, foto_id INTEGER, ingrediente_id INTEGER, cantidad_usada REAL)`);
-});
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => { cb(null, 'uploads/'); },
