@@ -1,5 +1,5 @@
 const express = require('express');
-const sqlite3 = require('sqlite');
+const sqlite3 = require('better-sqlite3');
 const path = require('path');
 const multer = require('multer');
 
