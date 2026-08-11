@@ -1,5 +1,5 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('sqlite');
 const path = require('path');
 const multer = require('multer');
 
@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 🗄️ BASE DE DATOS MODIFICADA CON CONFIGURACIÓN DE ÁREA
-const db = new sqlite3.Database('./usuarios.db', () => {
+const db = new sqlite3.Database('./usuarios.db');
   db.run(`CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS fotos (id INTEGER PRIMARY KEY AUTOINCREMENT, ruta TEXT, nombre TEXT, orden INTEGER, area TEXT DEFAULT 'Cocina')`);
   db.run(`CREATE TABLE IF NOT EXISTS ventas (id INTEGER PRIMARY KEY AUTOINCREMENT, total REAL, metodo_pago TEXT, fecha TEXT, plato_nombre TEXT, cantidad INTEGER, precio_unitario REAL, mesero TEXT, iva_aplicado REAL DEFAULT 0)`);
