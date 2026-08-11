@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú de Pedidos y Caja - gnBols</title>
+  <link rel="stylesheet" href="/estilos.css">
+  <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body>
+
+  <!-- 🔐 CONTENEDOR DE AUTENTICACIÓN -->
+  <div id="authContainer" class="main-box">
+    <h1 class="text-3d">gnBols</h1>
+    <h3 id="authTitle" style="color: #ff3344; margin-bottom: 20px;">Iniciar Sesión Mesero</h3>
+    <div class="client-inputs">
+      <input type="text" id="authUsername" placeholder="Nombre del Mesero o 'admin'">
+      <input type="password" id="authPassword" placeholder="Contraseña de Acceso">
+      <button id="btnActionAuth" class="btn-submit">Ingresar al Sistema</button>
+    </div>
+    <p style="margin-top: 15px; font-size: 0.9rem;">
+      <a href="#" id="toggleAuthMode" style="color: #ffb3bf; text-decoration: none;">¿Eres nuevo? Regístrate aquí</a>
+    </p>
+  </div>
+
+  <!-- 📊 DASHBOARD PRINCIPAL (PUNTO DE VENTA) -->
+  <div id="appContainer" class="main-box" style="display: none;">
+    <div class="navbar">
+      <span>👤 Usuario: <strong id="activeWaiterName" style="color: #ff3344;">-</strong> (<span id="userRoleBadge" style="font-weight: bold; text-transform: uppercase;">mesero</span>)</span>
+      <div>
+        <button id="btnOpenReport" class="btn-nav"><i class="fa-solid fa-cash-register"></i> Reporte Diario</button>
+        <button id="btnOpenAnalysis" class="btn-nav"><i class="fa-solid fa-chart-line"></i> Análisis Platos</button>
+        <button id="btnOpenRecetas" class="btn-nav" style="background: #2ecc71; color: white;"><i class="fa-solid fa-kitchen-set"></i> Recetas e Insumos</button>
+        <button id="btnLogout" class="btn-danger-nav"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
+      </div>
+    </div>
+
+    <div class="pos-container">
+      <!-- PANEL IZQUIERDO: AGREGAR Y RENDERIZAR PRODUCTOS -->
+      <div class="left-panel">
+        <form id="uploadForm" class="upload-zone" style="margin-bottom: 20px; background: #252525; padding: 15px; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #ff3344;">🛠️ Panel de Administración: Añadir Plato</h3>
+          <input type="file" id="fileInput" accept="image/*" required>
+          <input type="text" id="titleInput" placeholder="Ej: Pizza - $12.50" required>
+          
+          <!-- Selector de área de preparación para las comandas separadas -->
+          <label style="font-size: 0.85rem; color: #ccc; display: block; margin-bottom: 5px; text-align: left;">Área de Preparación:</label>
+          <select id="productAreaInput" style="margin-bottom: 15px; width: 100%; background: #333; color: white; border: 1px solid #444; padding: 8px; border-radius: 6px;">
+            <option value="Cocina" selected>🍳 Cocina (Platos / Comida)</option>
+            <option value="Bar">🍹 Bar (Bebidas / Cocteles)</option>
+          </select>
+          
+          <button type="submit" class="btn-add"><i class="fa-solid fa-plus"></i> Añadir al Menú</button>
+        </form>
+        <div id="productsGrid" class="grid"></div>
+      </div>
+
+      <!-- PANEL DERECHO: FACTURACIÓN EN TIEMPO REAL -->
+      <div class="invoice-container">
+        <h2>🧾 Factura de Venta</h2>
+        <div class="client-inputs">
+          <input type="text" id="clientName" placeholder="Nombre/Datos del Comprador">
+          
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <select id="orderServiceType" style="margin: 0; flex: 1;">
+              <option value="Para Llevar">🥡 Para Llevar</option>
+              <option value="Delivery">Delivery</option>
+              <option value="Mesa 1">🪑 Mesa 1</option> <option value="Mesa 2">🪑 Mesa 2</option>
+              <option value="Mesa 3">🪑 Mesa 3</option> <option value="Mesa 4">🪑 Mesa 4</option>
+              <option value="Mesa 5">🪑 Mesa 5</option> <option value="Mesa 6">🪑 Mesa 6</option>
+              <option value="Mesa 7">🪑 Mesa 7</option> <option value="Mesa 8">🪑 Mesa 8</option>
+              <option value="Mesa 9">🪑 Mesa 9</option> <option value="Mesa 10">🪑 Mesa 10</option>
+              <option value="Mesa 11">🪑 Mesa 11</option> <option value="Mesa 12">🪑 Mesa 12</option>
+              <option value="Mesa 13">🪑 Mesa 13</option> <option value="Mesa 14">🪑 Mesa 14</option>
+              <option value="Mesa 15">🪑 Mesa 15</option> <option value="Mesa 16">🪑 Mesa 16</option>
+              <option value="Mesa 17">🪑 Mesa 17</option> <option value="Mesa 18">🪑 Mesa 18</option>
+              <option value="Mesa 19">🪑 Mesa 19</option> <option value="Mesa 20">🪑 Mesa 20</option>
+              <option value="Mesa 21">🪑 Mesa 21</option> <option value="Mesa 22">🪑 Mesa 22</option>
+              <option value="Mesa 23">🪑 Mesa 23</option> <option value="Mesa 24">🪑 Mesa 24</option>
+              <option value="Mesa 25">🪑 Mesa 25</option> <option value="Mesa 26">🪑 Mesa 26</option>
+              <option value="Mesa 27">🪑 Mesa 27</option> <option value="Mesa 28">🪑 Mesa 28</option>
+              <option value="Mesa 29">🪑 Mesa 29</option> <option value="Mesa 30">🪑 Mesa 30</option>
+            </select>
+            <select id="paymentMethod" style="margin: 0; flex: 1;">
+              <option value="Efectivo">💵 Efectivo</option>
+              <option value="Tarjeta">💳 Tarjeta</option>
+              <option value="Transferencia">📱 Transferencia</option>
+            </select>
+          </div>
+          
+          <div style="margin-top: 5px; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="checkApplyTax" style="width: auto; margin: 0; cursor: pointer;">
+              <label for="checkApplyTax" style="cursor: pointer; color: #ffb3bf;">Aplicar IVA (Datos Registrados)</label>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="selectTaxPercentage" style="color: #ccc; font-size: 0.85rem;">Tarifa IVA:</label>
+              <select id="selectTaxPercentage" style="margin: 0; padding: 4px 8px; width: auto; background: #444;">
+                <option value="0.15" selected>15%</option>
+                <option value="0.12">12%</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <table class="invoice-table">
+          <thead>
+            <tr><th>Cant.</th><th>Producto</th><th style="text-align: right;">Total</th></tr>
+          </thead>
+          <tbody id="invoiceItems"></tbody>
+        </table>
+        <div class="invoice-totals">
+          <p>Subtotal: <span id="invoiceSubtotal">$0.00</span></p>
+          <p>IVA (<span id="taxLabelRate">15</span>%): <span id="invoiceTax">$0.00</span></p>
+          <hr>
+          <h3>Total: <span id="invoiceTotal">$0.00</span></h3>
+        </div>
+        <div class="invoice-actions">
+          <button id="btnResetInvoice" class="btn-clear"><i class="fa-solid fa-trash-can"></i> Limpiar</button>
+          <button id="btnPrintInvoice" class="btn-print"><i class="fa-solid fa-print"></i> Cobrar e Imprimir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📈 MODAL REPORTE DIARIO Y CAJA -->
+  <div id="reportModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-width: 500px;">
+      <h2>📊 Reporte Diario de Caja</h2>
+      <hr style="border:none; border-top:1px dashed #444; margin:10px 0;">
+      <div class="report-row"><span>💵 Efectivo:</span><span id="repCash">$0.00</span></div>
+      <div class="report-row"><span>💳 Tarjeta:</span><span id="repCard">$0.00</span></div>
+      <div class="report-row"><span>📱 Transferencia:</span><span id="repTrans">$0.00</span></div>
+      <hr style="border:none; border-top:1px dashed #444; margin:10px 0;">
+      <div class="report-row" style="font-size: 1.2rem; font-weight: bold;"><span>Total Caja:</span><span id="repTotal">$0.00</span></div>
+
+      <div style="margin-top: 20px; text-align: left;">
+        <h3 style="color: #ff3344; margin-bottom: 8px;"><i class="fa-solid fa-trophy"></i> Rendimiento por Colaborador</h3>
+        <div id="waitersRecordContainer" style="max-height: 150px; overflow-y: auto; font-size: 0.85rem; margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 6px;"></div>
+        
+        <div id="adminWaitersSection" style="display: none;">
+          <h3 style="color: #ff3344; margin-bottom: 8px;"><i class="fa-solid fa-users-gear"></i> Gestión de Meseros</h3>
+          <div id="waitersListContainer" style="max-height: 120px; overflow-y: auto; font-size: 0.85rem; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 6px; margin-bottom: 15px;"></div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnDeleteReport" class="btn-danger"><i class="fa-solid fa-trash-can"></i> Vaciar Caja</button>
+        <button id="btnCloseReport" class="btn-clear" style="margin-left: auto;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🍕 MODAL ANÁLISIS DE PLATOS -->
+  <div id="analysisModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-width: 550px;">
+      <h2>🍕 Historial de Platos Vendidos</h2>
+      <hr style="border:none; border-top:1px dashed #444; margin:10px 0;">
+      <div id="analysisContent" style="max-height: 250px; overflow-y: auto; text-align: left;"></div>
+      <hr style="border:none; border-top:1px dashed #444; margin:10px 0;">
+      <div id="analysisTotals" style="font-weight: bold; font-size: 1.1rem;"></div>
+      <div class="modal-actions" style="margin-top: 15px;">
+        <button id="btnDeleteAnalysisReport" class="btn-danger"><i class="fa-solid fa-trash"></i> Borrar Historial</button>
+        <button id="btnCloseAnalysis" class="btn-clear" style="margin-left: auto;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🥬 ALMACÉN DE RECETAS -->
+  <div id="recetasModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-width: 550px;">
+      <h2>🥬 Almacén de Ingredientes e Insumos</h2>
+      <hr>
+      <div class="client-inputs" style="text-align: left; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+        <h4 style="margin: 0 0 10px 0; color: #2ecc71;">1. Registrar Insumo en Bodega</h4>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="ingredienteNombre" placeholder="Ej: Queso Mozzarella, Carne, Papa" style="margin:0;">
+          <input type="number" id="ingredienteStock" placeholder="Cant" style="margin:0; max-width: 80px;" min="0">
+          <input type="text" id="ingredienteUnidad" placeholder="g / kg / ud" style="margin:0; max-width: 80px;">
+        </div>
+        <button id="btnSaveIngrediente" class="btn-add" style="width: 100%; margin-top: 8px; background: #2ecc71;">Añadir al Almacén</button>
+      </div>
+
+      <div class="client-inputs" style="text-align: left; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;">
+        <h4 style="margin: 0 0 10px 0; color: #3498db;">2. Armar Receta de Plato</h4>
+        <label style="font-size: 0.8rem; color: #ccc;">Selecciona el Plato:</label>
+        <select id="selectRecetaPlato"></select>
+        <label style="font-size: 0.8rem; color: #ccc;">Selecciona qué Ingrediente consume:</label>
+        <select id="selectRecetaIngrediente"></select>
+        <label style="font-size: 0.8rem; color: #ccc;">Cantidad que consume al venderse:</label>
+        <input type="number" id="recetaCantidadUsada" placeholder="Ej: 200 o 1" min="0.01" step="0.01">
+        <button id="btnSaveElementoReceta" class="btn-add" style="width: 100%; background: #3498db;">Vincular Insumo a Receta</button>
+      </div>
+
+      <hr style="margin-top: 15px;">
+      <h3 style="text-align: left; color: #2ecc71;"><i class="fa-solid fa-boxes-stacked"></i> Inventario Actual de Insumos</h3>
+      <div id="ingredientesListContent" style="max-height: 120px; overflow-y: auto; text-align: left; font-size: 0.85rem;"></div>
+      <div class="modal-actions" style="margin-top: 15px;">
+        <button id="btnCloseRecetas" class="btn-clear" style="width: 100%;">Cerrar Ventana</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

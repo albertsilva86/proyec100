@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo Administrativo - Rendimiento de Meseros</title>
+  <link rel="stylesheet" href="https://cloudflare.com">
+  <link rel="stylesheet" href="/estilos.css">
+</head>
+<body>
+
+  <!-- PANTALLA 1: ACCESO SEGURO CON CONTRASEÑA ADMINISTRATIVA -->
+  <div id="adminAuthBox" class="main-box" style="max-width: 420px; margin: 80px auto;">
+    <h1 class="text-3d" style="font-size: 3rem;">gnBols</h1>
+    <h3 style="color: #ff3344; margin-bottom: 20px;"><i class="fa-solid fa-lock"></i> Panel de Administración</h3>
+    
+    <div class="client-inputs" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(220, 20, 60, 0.3); padding: 20px;">
+      <p style="font-size: 0.85rem; margin-bottom: 12px; color: #ffb3bf; line-height: 1.4;">Si es la primera vez que ingresas, la contraseña que escribas se guardará como la clave maestra.</p>
+      <input type="password" id="adminPasswordInput" placeholder="Contraseña Gerencial" style="margin-bottom: 15px; padding: 12px; text-align: center;">
+      
+      <div style="display: flex; gap: 10px;">
+        <button id="btnBackToMenu" class="btn-action" style="background: #6c757d; color: #fff; padding: 12px; border-radius: 6px; font-weight: bold; flex: 1; border: none; cursor: pointer;"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+        <button id="btnEnterAdmin" class="btn-submit" style="flex: 1.5; padding: 12px; margin: 0;">Desbloquear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA 2: REPORTE GERENCIAL (DESBLOQUEADO) -->
+  <div id="adminReportContainer" class="main-box" style="display: none; max-width: 850px; margin: 20px auto; text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #dc143c; padding-bottom: 15px; margin-bottom: 20px;">
+      <h2 class="text-3d" style="font-size: 2.2rem; margin: 0;">Auditoría de Meseros</h2>
+      <button class="btn-logout" id="btnExitAdmin" style="margin: 0; background: #6c757d;"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+    </div>
+
+    <div class="invoice-container" style="background: rgba(20, 5, 10, 0.9); color: #fff; border: 1px solid rgba(220, 20, 60, 0.3); margin-bottom: 25px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: #ff3344; margin: 0;"><i class="fa-solid fa-users"></i> Unidades Vendidas por Colaborador</h3>
+        
+        <!-- 🎛️ BOTONES SEPARADOS: Uno exclusivo para imprimir y otro exclusivo para vaciar -->
+        <div style="display: flex; gap: 10px;" id="adminActionsContainer">
+          <button id="btnPrintAdminReport" class="btn-box-report" style="margin: 0; background: #28a745; color: #fff;"><i class="fa-solid fa-print"></i> Imprimir Reporte</button>
+          <button id="btnClearAdminHistory" class="btn-box-report" style="margin: 0; background: #9c0c27; color: #fff;"><i class="fa-solid fa-trash-can"></i> Vaciar Historial</button>
+        </div>
+      </div>
+      
+      <table class="invoice-table" style="color: #fff; margin-top: 15px; width: 100%;">
+        <thead>
+          <tr style="border-bottom: 2px solid rgba(220,20,60,0.5);">
+            <th style="padding: 10px 0; color: #ffb3bf;">Mesero</th>
+            <th style="padding: 10px 0; color: #ffb3bf;">Platillo / Producto</th>
+            <th style="padding: 10px 0; text-align: center; color: #ffb3bf;">Cantidad Total</th>
+            <th style="padding: 10px 0; text-align: right; color: #ffb3bf;">Total Recaudado</th>
+          </tr>
+        </thead>
+        <tbody id="waiterSalesTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const adminAuthBox = document.getElementById('adminAuthBox');
+    const adminReportContainer = document.getElementById('adminReportContainer');
+    const adminPasswordInput = document.getElementById('adminPasswordInput');
+    const btnEnterAdmin = document.getElementById('btnEnterAdmin');
+    const btnBackToMenu = document.getElementById('btnBackToMenu');
+    const waiterSalesTableBody = document.getElementById('waiterSalesTableBody');
+
+    btnEnterAdmin.addEventListener('click', async () => {
+      const password = adminPasswordInput.value.trim();
+      if (!password) return alert("Por favor ingresa una contraseña.");
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          adminAuthBox.style.display = "none";
+          adminReportContainer.style.display = "block";
+          cargarReporteMeseros();
+        } else {
+          alert(data.mensaje);
+        }
+      } catch (error) { console.error(error); }
+    });
+
+    async function cargarReporteMeseros() {
+      try {
+        const res = await fetch('/api/admin/ventas-por-mesero');
+        if (res.ok) {
+          const datos = await res.json();
+          waiterSalesTableBody.innerHTML = '';
+
+          if (datos.length === 0) {
+            waiterSalesTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px; color:#aaa;">No hay registros de platos vendidos por meseros aún.</td></tr>`;
+            return;
+          }
+
+          let lastWaiter = "";
+          let waiterTotalQty = 0;
+          let waiterTotalMoney = 0;
+
+          function appendTotalRow(waiterName, totalQty, totalMoney) {
+            const totalTr = document.createElement('tr');
+            totalTr.className = 'total-row-waiter';
+            totalTr.style.background = "rgba(220, 20, 60, 0.15)";
+            totalTr.style.borderBottom = "2px solid #dc143c";
+            totalTr.style.fontWeight = "bold";
+            totalTr.innerHTML = `
+              <td style="padding: 10px 0; color: #ff3344;">📊 TOTAL ${waiterName.toUpperCase()}</td>
+              <td style="padding: 10px 0;"></td>
+              <td style="padding: 10px 0; text-align: center; color: #ff3344; font-size: 1.05rem;">${totalQty} uds.</td>
+              <td style="padding: 10px 0; text-align: right; color: #28a745; font-size: 1.05rem;">$${totalMoney.toFixed(2)}</td>
+            `;
+            waiterSalesTableBody.appendChild(totalTr);
+          }
+
+          datos.forEach((row, index) => {
+            if (lastWaiter && lastWaiter !== row.mesero) {
+              appendTotalRow(lastWaiter, waiterTotalQty, waiterTotalMoney);
+              waiterTotalQty = 0;
+              waiterTotalMoney = 0;
+            }
+
+            lastWaiter = row.mesero;
+            waiterTotalQty += row.total_cantidad;
+            waiterTotalMoney += row.total_recaudado;
+
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px dashed rgba(255,255,255,0.1)';
+            tr.innerHTML = `
+              <td style="padding: 12px 0;">👤 <strong>${row.mesero}</strong></td>
+              <td style="padding: 12px 0; color: #ffb3bf;">${row.plato_nombre}</td>
+              <td style="padding: 12px 0; text-align: center; font-weight: bold; color: #ff3344;">${row.total_cantidad} uds.</td>
+              <td style="padding: 12px 0; text-align: right; font-weight: bold; color: #ffb3bf;">$${row.total_recaudado.toFixed(2)}</td>
+            `;
+            waiterSalesTableBody.appendChild(tr);
+
+            if (index === datos.length - 1) {
+              appendTotalRow(lastWaiter, waiterTotalQty, waiterTotalMoney);
+            }
+          });
+        }
+      } catch (error) { console.error(error); }
+    }
+
+    // 🖨️ ACCIÓN IMPRIMIR: Únicamente manda la orden a la impresora papel/PDF
+    document.getElementById('btnPrintAdminReport').addEventListener('click', () => {
+      window.print();
+    });
+
+    // 🗑️ ACCIÓN ELIMINAR SEPARADA: Exige clave maestra y vacía SQLite
+    document.getElementById('btnClearAdminHistory').addEventListener('click', async () => {
+      const passwordInput = prompt('Acceso Restringido. Ingrese la Contraseña Administrativa para borrar la auditoría de meseros:');
+      if (passwordInput === null) return;
+      if (passwordInput.trim() === "") return alert("Debe ingresar una contraseña.");
+
+      try {
+        const authRes = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: passwordInput.trim() })
+        });
+
+        if (authRes.ok) {
+          if (confirm('Contraseña correcta. ¿ELIMINAR permanentemente todo el historial de auditoría de meseros de la base de datos?')) {
+            const res = await fetch('/api/borrar-reporte-diario', { method: 'DELETE' });
+            if (res.ok) {
+              alert("Historial de auditoría eliminado correctamente.");
+              cargarReporteMeseros();
+            } else { alert("Error al intentar vaciar el historial."); }
+          }
+        } else { alert("Contraseña administrativa incorrecta. Acción denegada."); }
+      } catch (error) { console.error(error); }
+    });
+
+    btnBackToMenu.addEventListener('click', () => { window.location.href = '/'; });
+    document.getElementById('btnExitAdmin').addEventListener('click', () => { window.location.href = '/'; });
+  </script>
+</body>
+</html>

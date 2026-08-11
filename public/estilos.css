@@ -1,0 +1,118 @@
+/* --- ESTILOS GENERALES (TEMA OSCURO MODERNO) --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.main-box {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+.text-3d {
+    font-size: 3.5rem;
+    margin: 0 0 10px 0;
+    color: #ff3344;
+    text-shadow: 2px 2px 0px #990011;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #252525;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* POS LAYOUT */
+.pos-container {
+    display: flex;
+    gap: 20px;
+}
+
+.left-panel { flex: 2; }
+.invoice-container {
+    flex: 1;
+    background: #252525;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+/* BOTONES */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-nav { background: #333; color: #fff; margin-left: 5px; }
+.btn-nav:hover { background: #444; }
+.btn-danger-nav { background: #dc143c; color: #fff; }
+.btn-submit { background: #ff3344; color: #fff; width: 100%; margin-top: 10px; }
+.btn-add { background: #28a745; color: #fff; }
+.btn-clear { background: #555; color: #fff; }
+.btn-print { background: #ff3344; color: #fff; width: 100%; font-size: 1.1rem; }
+.btn-danger { background: #dc143c; color: #fff; }
+/* INPUTS */
+input, select {
+    background: #333;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    width: -webkit-fill-available;
+}
+
+/* CUADRÍCULA DE PRODUCTOS */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.photo-card {
+    background: #252525;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid #333;
+}
+
+.photo-card img { width: 100%; height: 120px; object-fit: cover; }
+.photo-footer { padding: 10px; text-align: center; font-weight: bold; }
+.btn-delete { position: absolute; top: 5px; right: 5px; background: rgba(220,20,60,0.8); color: #fff; padding: 5px 8px; border-radius: 4px; }
+
+/* TABLAS Y TOTALES */
+.invoice-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
+.invoice-table th { border-bottom: 2px solid #444; padding: 8px 0; text-align: left; }
+.invoice-table td { padding: 8px 0; border-bottom: 1px solid #333; }
+.invoice-totals { margin-top: 20px; text-align: right; }
+
+/* MODALES Y REPORTES */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
+}
+.modal-box { background: #252525; padding: 25px; border-radius: 10px; width: 90%; max-width: 450px; }
+.report-row { display: flex; justify-content: space-between; padding: 8px 0; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
